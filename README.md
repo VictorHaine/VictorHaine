@@ -1,7 +1,3 @@
-### Hi there! 👋
-
-My name's Victor.
-
 ### Founder at [INDEVS](https://indevs.com.br)
 ### CTO and Co-Founder [FilmeFilme](https://filmefilme.com.br) - The best curated movies, to everyone.
 
