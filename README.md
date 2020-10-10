@@ -1,16 +1,14 @@
-### Hi there 👋
+### Hi there! 👋
 
-<!--
-**VictorHaine/VictorHaine** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+My name's Victor.
 
-Here are some ideas to get you started:
+### Founder at [INDEVS](https://indevs.com.br)
+### CTO and Co-Founder [FilmeFilme](https://filmefilme.com.br) - The best curated movies, to everyone.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+### If you're interested in programming high availability systems, movie encoding stacks, developing high performance apps and love tech as we do, drop me a message. We're always hiring.
+
+*The more I read, the more I acquire, the more certain I am that I know nothing.*
+<br/><br/>
+
+Made in Brazil<br />
+<img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/whatsapp/238/flag-for-brazil_1f1e7-1f1f7.png" height="20px" />
