@@ -8,6 +8,9 @@
 <br/><br/>
 
 [![GitHub stats](https://github-readme-stats.vercel.app/api?username=victorhaine)](https://github.com/anuraghazra/github-readme-stats)
+[![Most used](https://github-readme-stats.vercel.app/api/top-langs/?username=victorhaine)
+
+
 
 Made in Brazil<br />
 <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/whatsapp/238/flag-for-brazil_1f1e7-1f1f7.png" height="20px" />
