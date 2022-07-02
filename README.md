@@ -7,8 +7,13 @@
 *The more I read, the more I acquire, the more certain I am that I know nothing.*
 <br/><br/>
 
-[![GitHub stats](https://github-readme-stats.vercel.app/api?username=victorhaine)](https://github.com/anuraghazra/github-readme-stats)
-[![Most used](https://github-readme-stats.vercel.app/api/top-langs/?username=victorhaine)
+
+![Badges](https://github-profile-trophy.vercel.app/?username=victorhaine)
+![Hit Counter](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2F{username}1212%2Fhit-counter)
+
+![GitHub stats](https://github-readme-stats.vercel.app/api?username=victorhaine)
+
+![Most used](https://github-readme-stats.vercel.app/api/top-langs/?username=victorhaine)
 
 
 
