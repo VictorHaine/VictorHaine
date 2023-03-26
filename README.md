@@ -1,10 +1,13 @@
 ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvictorhaine&count_bg=%23909090&title_bg=%23000000&icon=apple.svg&icon_color=%23E9E9E9&title=Visitors&edge_flat=false)
 
-Hi, my name's Victor Haine Takahashi, computer engineer and entrepreneur.
+Hey, I'm Victor!
 
-Currently I'm **CTO & Partner at [Carbonext](https://carbonext.com.br)** - Nature based solutions
+Senior software engineer with 15+ years of experience designing, implementing, and marketing software solutions.
 
-***If you're interested in programming high availability systems, developing high performance apps and love tech as we do, drop me a message. I'm always hiring.***
+Contributing to entropy since 94’
+
+[![](https://img.shields.io/badge/-@victorhaine-%23181717?style=for-the-badge&logo=github)](https://github.com/victorhaine)
+[![](https://img.shields.io/badge/-Victor%20Takahashi-blue?style=for-the-badge&logo=Linkedin&logoColor=white)](https://www.linkedin.com/in/victor-haine-takahashi-166853b6/)
 
 <br>
 <hr />
