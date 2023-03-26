@@ -1,8 +1,6 @@
-![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvictorhaine&count_bg=%23909090&title_bg=%23000000&icon=apple.svg&icon_color=%23E9E9E9&title=Visitors&edge_flat=false)
+#### Hey, I'm Victor! 👋
 
-Hey, I'm Victor!
-
-Senior software engineer with 15+ years of experience designing, implementing, and marketing software solutions.
+Entrepreneur and software engineer with 15+ years of experience designing, implementing, and marketing software solutions.
 
 Contributing to entropy since 94’
 
