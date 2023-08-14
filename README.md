@@ -5,7 +5,7 @@ Entrepreneur and software engineer with 15+ years of experience designing, imple
 Contributing to entropy since 94’
 
 [![](https://img.shields.io/badge/-@victorhaine-%23181717?style=for-the-badge&logo=github)](https://github.com/victorhaine)
-[![](https://img.shields.io/badge/-Victor%20Takahashi-blue?style=for-the-badge&logo=Linkedin&logoColor=white)](https://www.linkedin.com/in/victor-haine-takahashi-166853b6/)
+[![](https://img.shields.io/badge/-Victor%20Takahashi-blue?style=for-the-badge&logo=Linkedin&logoColor=white)](https://www.linkedin.com/in/victor-haine-takahashi/)
 
 <br>
 <hr />
