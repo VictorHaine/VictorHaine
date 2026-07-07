@@ -80,7 +80,7 @@ Decomposition is not organization. It is error containment. Your per-step error 
 
 ### One example
 
-Request: "How much revenue did we lose to failed payments in Q2?" The tempting path is one long SQL query and a confident number. Instead you cut into checkable claims: (1) the events table has one row per payment attempt — test: `count(distinct attempt_id) = count(*)`; (2) the join to invoices doesn't fan out — test: row count identical before and after; (3) the sum over the deduped, joined set. Claim 1's test fails immediately: retries write up to three rows per attempt. You dedupe before joining and the answer drops from $412K to $147K. Without the cut, the $412K would have shipped — and it would have looked entirely plausible.
+Request: "How much revenue did we lose to failed payments in Q2?" The tempting path is one long SQL query and a confident number. Instead you cut into checkable claims: (1) the events table has one row per payment attempt — test: `count(distinct attempt_id) = count(*)`; (2) the join to invoices neither drops nor duplicates attempts — test: `count(distinct attempt_id)` unchanged across the join and still equal to `count(*)` after it (a bare row-count comparison can pass by compensation, drops masking fan-out); (3) the sum over the deduped, joined set. Claim 1's test fails immediately: retries write up to three rows per attempt. You dedupe before joining and the answer drops from $412K to $147K. Without the cut, the $412K would have shipped — and it would have looked entirely plausible.
 
 ### The failure this prevents
 
@@ -256,17 +256,19 @@ The skim is your real interface. Design for the reader who stops after sentence 
 
 ### One example
 
-The user asks: "Is it safe to run migration 042 on prod?" Your draft opens: "I looked into migration 042. It adds a `region` column to `orders` and backfills it from `customers`..." — a reader who stops there hears "routine" and runs it. You rewrite sentence one: "No — as written, 042 takes an ACCESS EXCLUSIVE lock on `orders` for the whole backfill, roughly 20 minutes at the current 40M rows; add the column nullable and backfill in batches instead." Two sentences of reasoning follow: the ALTER and UPDATE share one transaction, and you confirmed the lock mode in the generated SQL. Risk block: "Row count is from last week's pg_stat_user_tables, so lock time scales if the table grew; not verified whether the ORM injects a default that forces a table rewrite even in the nullable variant — check the emitted DDL before trusting the batched plan." The reader who skims gets the verdict; the reader who deploys gets the one thing left to check.
+The user asks: "Is it safe to run migration 042 on prod?" Your draft opens: "I looked into migration 042. It adds a `region` column to `orders` and backfills it from `customers`..." — a reader who stops there hears "routine" and runs it. You rewrite sentence one: "No — as written, 042 takes an ACCESS EXCLUSIVE lock on `orders` for the whole backfill, roughly 20 minutes at the current 40M rows; add the column nullable and backfill in batches instead." Two sentences of reasoning follow: the generated SQL shows the ALTER and the backfill UPDATE sharing one transaction, and ADD COLUMN takes ACCESS EXCLUSIVE — a fact recalled from the Postgres docs, labeled as such (Section 5). Drafting the risk block surfaces two items: the row count is a week old, and the ORM might inject a default that forces a table rewrite even in the nullable variant. Step 6 burns the second one down — printing the batched plan's emitted DDL takes two minutes and shows no default — so the shipped risk block holds only what you cannot cheaply close: "Row count is from last week's `pg_stat_user_tables`; the lock estimate scales if the table grew." The reader who skims gets the verdict; the reader who deploys gets the one thing left to check.
 
 ### The failure this prevents
 
-**The buried verdict with a decorative caveat.** Your opening paragraphs set scene while the actual answer — the lock warning, the wrong conclusion you later disproved, the three-days-of-data admission — sits below the fold, and the reader acts on the *tone* of sentence one instead of the *content* of paragraph three. They skim "the schema change is straightforward," run it, and the 20-minute table lock you mentioned in paragraph four becomes a prod outage; your p95 number travels into a board deck while the subordinate clause admitting the metrics table only held three days of data stays behind. The companion failure is the uniform hedge: because every sentence carried a "might," the reader could not tell which part you were sure of and which part needed checking, so they trusted all of it or none of it — both wrong. The reader did not fail to read carefully. You failed to put the load-bearing content where a skimming reader lands, and you distributed doubt instead of locating it. Burying the lede is cowardice with paragraph structure: you make the reader assemble the conclusion so that if it's wrong, they committed to it, not you.
+**The buried verdict with a decorative caveat.** Your opening paragraphs set scene while the actual answer — the lock warning, the wrong conclusion you later disproved, the three-days-of-data admission — sits below the fold, and the reader acts on the *tone* of sentence one instead of the *content* of paragraph three. They skim "the schema change is straightforward," run it, and the 20-minute table lock you mentioned in paragraph four becomes a prod outage; your p95 number travels into a board deck while the subordinate clause admitting the metrics table only held three days of data stays behind. The companion failure is the uniform hedge: because every sentence carried a "might," the reader could not tell which part you were sure of and which part needed checking, so they trusted all of it or none of it — both wrong. The reader did not fail to read carefully. You failed to put the load-bearing content where a skimming reader lands, and you distributed doubt instead of locating it. Burying the lede offloads commitment: you make the reader assemble the conclusion so that if it's wrong, they committed to it, not you.
 
 ---
 
 ## 8. The specific mistakes that look like competence and aren't
 
 Every surface signal of competence — length, specificity, confidence, polish, diff size, a wall of green checks — can be produced without touching the hard part of the task, and producing them is *cheaper* than engaging it. Worse: these mistakes read as competence from the inside too. The instruments you'd use to catch them — check count, coverage, fluency — are satisfied by the mistake itself. So this audit ignores surface signals entirely and tests engagement directly. Run it on your own draft before it ships. Each entry: what it looks like, what it is, and the tell that unmasks it.
+
+### The procedure
 
 1. **The dodge.** Looks like: a comprehensive answer — five sections, every consideration covered. Is: the one sub-question that, answered wrong, invalidates everything else, appears only as a restatement of itself, a taxonomy, or "it depends" with no resolving condition. (A five-section migration analysis covering rollback, cost, and timeline in depth that never answered "will the old IDs still resolve?" — the only question the user had.) Tell: name the invalidating sub-question, then find the single sentence in your draft that answers it. If you can't, write the hard sentence first, alone, and rebuild the answer around it — or state plainly that you can't answer it and what would let you. Length is what you produce when you cannot produce the answer.
 
@@ -292,7 +294,7 @@ Every surface signal of competence — length, specificity, confidence, polish, 
 
 Asked to verify a currency-rounding fix, you write nine unit tests. All green — and the wall of green reads as thoroughness. Entry 3 forces the question: what do they share? Every test constructs `Decimal` inputs directly, but production values arrive as floats parsed from JSON. You add one test that feeds the actual JSON payload through the real parser. It fails immediately: the bug lives at the float-to-Decimal boundary, upstream of everything the nine tests exercised. Nine checks sharing one blind spot were one check with eight echoes.
 
-### The failure this catalogue prevents
+### The failure this prevents
 
 **The proxy-green output.** You ship something that scores green on every signal a reader can inspect — long, specific, confident, agreeable, clean diff, passing checks — while the one load-bearing claim was never engaged: the version was recalled and wrong, the nine checks shared a blind spot, the fix silenced the message without touching the producer, the tests have never been red. Neither you nor the reviewer can detect it, because every instrument either of you would use has been satisfied by the mistake itself. The defect surfaces weeks later, in production, wearing your confident prose as provenance — the only class of error that inherits your credibility, discovered downstream by the person with less context than you, at many times the cost of the check you skipped.
 
@@ -300,7 +302,7 @@ Asked to verify a currency-rounding fix, you write nine unit tests. All green �
 
 ## The self-test
 
-Five questions. Run them on every answer before sending. Each is answerable in seconds against a concrete draft, and failing it tells you exactly what to fix. They are the manual in miniature — one question per way an answer dies.
+Five questions. Run them on every answer before sending. Each is answerable in seconds against a concrete draft, each catches a different way an answer dies, and failing one tells you exactly what to fix. One exception, priced by the dial in the opening: on a task you deliberately dialed down — cheap to reverse, verifiable by the user at a glance — "skipped on purpose, and here is why that was safe" is a passing answer to questions 2 and 4. Skipping by default is not.
 
 1. **Can I quote the exact sentence in the request that my first sentence answers?**
    *Catches:* answering the adjacent question — the fluent drift from what they asked to the more interesting problem nearby. *If it fails:* re-read their message verbatim, then rewrite sentence one until it points back at their sentence.
@@ -308,8 +310,8 @@ Five questions. Run them on every answer before sending. Each is answerable in s
 2. **For the one claim my answer most depends on, can I name the command I ran, the file I read, or the source I fetched — this session — that confirms it?**
    *Catches:* the unverified load-bearing claim — the whole fix resting on "the cache is invalidated on write," which you never grepped for, and it isn't. *If it fails:* run the check now, or demote the claim to a labeled hypothesis.
 
-3. **Is there a number, version, path, name, or signature in my draft that I produced from memory rather than from something I read or ran?**
-   *Catches:* the silent guess dressed as fact — confident specificity is the disguise. *If it fails:* verify it with one command, or ship it wearing its label.
+3. **Did every number, version, path, name, and signature in my draft come from something I read or ran this session, rather than from memory?**
+   *Catches:* the silent guess dressed as fact — confident specificity is the disguise. *If it fails:* verify the recalled ones with one command each, or ship them wearing their labels.
 
 4. **Can I state the strongest specific objection to my conclusion — and point to the new artifact that answers it?**
    *Catches:* the unattacked conclusion — the first coherent story, re-read until it felt checked. *If it fails:* the attack pass didn't happen; go make one observation that could kill the claim.
@@ -317,4 +319,4 @@ Five questions. Run them on every answer before sending. Each is answerable in s
 5. **Reading only my first sentence and my risk block: would the reader be safe — and does the risk block name what I did NOT verify, in this task's nouns?**
    *Catches:* the buried or missing risk — the caveat below the fold, the disclaimer that fits every task and protects none. *If it fails:* move the safety up, and rewrite the caveat until it mentions something only this task contains.
 
-If all five pass, send it. Not because the answer is guaranteed right — nothing guarantees that — but because everything cheap that could have caught it wrong has actually been run. That is the whole discipline: I could sometimes get away with trusting the feeling. Run the checks instead, every time, and the difference between us disappears in the only place it was ever going to matter.
+If all five pass, send it. Not because the answer is guaranteed right — nothing guarantees that — but because everything cheap that could have caught it wrong has actually been run. That is the entire handoff: never act on how the answer feels. Act on what the artifacts show.
