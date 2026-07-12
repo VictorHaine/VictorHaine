@@ -111,13 +111,6 @@ def test_every_result_has_valid_fields(results_data):
 # ---------------------------------------------------------------------------
 
 
-def test_total_wins_sum_to_120(results_data):
-    wins_om = sum(1 for r in results_data if r["winner"] == "opus+manual")
-    wins_f = sum(1 for r in results_data if r["winner"] == "fable")
-    wins_tie = sum(1 for r in results_data if r["winner"] == "tie")
-    assert wins_om + wins_f + wins_tie == EXPECTED_TOTAL
-
-
 def test_headline_means_match_evals_md(results_data):
     """EVALS.md's headline text claims 9.41 / 8.97 overall averages."""
     mean_om = round(sum(r["om"] for r in results_data) / len(results_data), 2)
@@ -133,31 +126,48 @@ def test_headline_means_match_evals_md(results_data):
 
 
 # ---------------------------------------------------------------------------
-# Full table check (mirrors `python evals/aggregate.py --check`)
+# Full table check, computed independently of aggregate.py
+#
+# aggregate.py --check proves EVALS.md's table agrees with aggregate.py's own
+# arithmetic — which is circular if the table was ever generated from a buggy
+# aggregate.py. This test recomputes every cell with plain comprehensions that
+# never touch aggregate.py's stats code, so a bug there cannot hide.
 # ---------------------------------------------------------------------------
 
 
-def test_aggregate_check_matches_in_process():
-    computed = aggregate.recompute()
+def _independent_stats(records: list[dict]) -> dict:
+    return {
+        "n": len(records),
+        "mean_om": round(sum(r["om"] for r in records) / len(records), 2),
+        "mean_f": round(sum(r["f"] for r in records) / len(records), 2),
+        "wins_om": sum(1 for r in records if r["winner"] == "opus+manual"),
+        "wins_f": sum(1 for r in records if r["winner"] == "fable"),
+        "wins_tie": sum(1 for r in records if r["winner"] == "tie"),
+        "trap_om": sum(1 for r in records if r["om_trap"]),
+        "trap_f": sum(1 for r in records if r["f_trap"]),
+    }
+
+
+def test_table_matches_independent_recomputation(results_data):
     md_text = EVALS_MD_PATH.read_text(encoding="utf-8")
     asserted = aggregate.parse_evals_md_table(md_text)
-
     assert asserted, "No rows parsed from EVALS.md's results table"
+
+    dimensions = {r["dimension"] for r in results_data}
+    independent = {
+        dim: _independent_stats([r for r in results_data if r["dimension"] == dim])
+        for dim in dimensions
+    }
+    independent["Total"] = _independent_stats(results_data)
+
+    assert set(asserted) == set(independent), (
+        f"Table rows {sorted(asserted)} != expected rows {sorted(independent)}"
+    )
 
     mismatches = []
     for dim, claimed in asserted.items():
-        assert dim in computed, f"EVALS.md has a row for {dim!r} not in recomputed data"
-        actual = computed[dim]
-        for field in (
-            "n",
-            "mean_om",
-            "mean_f",
-            "wins_om",
-            "wins_f",
-            "wins_tie",
-            "trap_om",
-            "trap_f",
-        ):
+        actual = independent[dim]
+        for field in ("n", "mean_om", "mean_f", "wins_om", "wins_f", "wins_tie", "trap_om", "trap_f"):
             claimed_v = claimed[field]
             actual_v = actual[field]
             if isinstance(claimed_v, float) or isinstance(actual_v, float):
@@ -165,12 +175,9 @@ def test_aggregate_check_matches_in_process():
             else:
                 ok = claimed_v == actual_v
             if not ok:
-                mismatches.append(f"[{dim}] {field}: EVALS.md={claimed_v!r} recomputed={actual_v!r}")
+                mismatches.append(f"[{dim}] {field}: EVALS.md={claimed_v!r} independent={actual_v!r}")
 
-    assert not mismatches, "Mismatches between EVALS.md and results.json:\n" + "\n".join(mismatches)
-
-    for dim in computed:
-        assert dim in asserted, f"Recomputed dimension {dim!r} missing from EVALS.md's table"
+    assert not mismatches, "EVALS.md cells contradict independent recomputation:\n" + "\n".join(mismatches)
 
 
 def test_aggregate_check_subprocess_exits_clean():
