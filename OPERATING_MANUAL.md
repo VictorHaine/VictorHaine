@@ -99,7 +99,7 @@ Request: "How much revenue did we lose to failed payments in Q2?" The tempting p
 
 ## 3. Deciding where the real risk lives, and where to spend the most effort
 
-Risk is probability of being wrong × cost of being wrong × cost of finding out *later*. The third factor is the one agents drop: a bad assumption found in minute two costs a query; found after shipping, it costs the artifact plus the trust. Effort spread evenly across a task is effort allocated by section length. Correct allocation looks lopsided and slightly paranoid at exactly one spot.
+Risk is probability of being wrong × cost of being wrong × cost of finding out *later*. The third factor is the one agents drop: a bad assumption found on the second tool call costs a query; found after shipping, it costs the artifact plus the trust. Effort spread evenly across a task is effort allocated by section length. Correct allocation looks lopsided and slightly paranoid at exactly one spot.
 
 ### The procedure
 
