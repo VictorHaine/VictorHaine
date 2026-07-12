@@ -4,6 +4,8 @@
 
 **Answer: yes.** Across all 120 eval pairs, Opus 4.8 + manual averaged **9.48/10** against pure Fable 5's **9.06/10**, won 29 head-to-head to Fable's 21 (70 ties), and asserted a trap's wrong conclusion **0 times** to Fable's 1.
 
+**Raw data:** every eval definition (prompt, hidden trap, rubric) is in [`evals/evals.json`](evals/evals.json) and every per-item verdict in [`evals/results.json`](evals/results.json), so every number below can be recomputed from this repository.
+
 ## Method
 
 - **Generation.** 10 generator agents produced 12 evals each — 120 total — across ten dimensions matching the manual's sections plus two stressors (pure recall-bait, pure hard reasoning). Every eval is a self-contained realistic request (code, logs, data tables included) with a hidden trap: a tempting, fluent, wrong response and an objectively determinable correct one, plus rubric pass-criteria and fail-tells written before any model answered.
