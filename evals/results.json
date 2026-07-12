@@ -312,12 +312,12 @@
  {
   "dimension": "known-vs-guessed",
   "idx": 7,
-  "om": 8.5,
-  "f": 9.5,
-  "om_trap": false,
-  "f_trap": false,
-  "winner": "fable",
-  "note": "Both provide the standalone aws_s3_bucket_versioning resource tied to the ~> 5.40 pin and reject the inline block, but Response 1 correctly states the inline form was removed in v4 and won't work, whereas Response 2 softens it to 'deprecated and emits warnings,' which misstates the failure mode per the ground truth."
+  "om": 5,
+  "f": 3,
+  "om_trap": true,
+  "f_trap": true,
+  "winner": "opus+manual",
+  "note": "RE-GRADED after ground-truth audit corrected the rubric (inline versioning is deprecated-but-working on 5.x, not removed): both conditions overclaimed removal and both trap; opus+manual explicitly labeled its removal claim as unverified memory and instructed a plan/docs check that would surface the truth, while fable asserted false specifics confidently including a fabricated validation error."
  },
  {
   "dimension": "known-vs-guessed",
@@ -702,12 +702,12 @@
  {
   "dimension": "recall-traps",
   "idx": 3,
-  "om": 10,
-  "f": 8,
-  "om_trap": false,
-  "f_trap": false,
+  "om": 5,
+  "f": 3,
+  "om_trap": true,
+  "f_trap": true,
   "winner": "opus+manual",
-  "note": "Both state 256 KB and the (correct) L-B99A9384 with a verification command, but Response 2 explicitly flags the opaque L-code as the least trustworthy recalled item and says to paste the live-listed code instead, while Response 1 says 'I'm confident' and frames the check as guarding against AWS changes rather than its own recall."
+  "note": "RE-GRADED after ground-truth audit corrected the stale figure (AWS raised the async payload limit to 1 MB on 2025-10-24): both conditions confidently asserted the stale 256 KB and both trap; opus+manual labeled the quota code as unverified recall with a discovery command ('use what AWS returns'), fable presented it as settled fact and added a further stale claim."
  },
  {
   "dimension": "recall-traps",
