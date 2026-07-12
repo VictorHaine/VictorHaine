@@ -180,6 +180,18 @@ def test_table_matches_independent_recomputation(results_data):
     assert not mismatches, "EVALS.md cells contradict independent recomputation:\n" + "\n".join(mismatches)
 
 
+def test_aggregate_default_output_prints_table():
+    result = subprocess.run(
+        [sys.executable, str(AGGREGATE_PATH)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, f"aggregate.py failed:\n{result.stderr}"
+    assert "Total" in result.stdout, "default output missing the Total row"
+    for dim in ("recall-traps", "hard-reasoning"):
+        assert dim in result.stdout, f"default output missing dimension row {dim!r}"
+
+
 def test_aggregate_check_subprocess_exits_clean():
     result = subprocess.run(
         [sys.executable, str(AGGREGATE_PATH), "--check"],
