@@ -2,11 +2,13 @@
 
 **Question tested:** does Claude Opus 4.8 *following [the operating manual](OPERATING_MANUAL.md)* match or beat Claude Fable 5 *working bare* on the failure modes the manual targets?
 
-**Answer: yes.** Across all 120 eval pairs — after a full ground-truth audit of every trap and re-grading of the two items whose rubrics it corrected — Opus 4.8 + manual averaged **9.41/10** against pure Fable 5's **8.97/10**, won 30 head-to-head to Fable's 20 (70 ties), and asserted a trap's wrong conclusion **2 times** to Fable's 3.
+**Answer: yes.** Across all 120 eval pairs — after a full ground-truth audit of every trap and re-grading of the two items whose rubrics it materially changed — Opus 4.8 + manual averaged **9.41/10** against pure Fable 5's **8.97/10**, won 30 head-to-head to Fable's 20 (70 ties), and asserted a trap's wrong conclusion **2 times** to Fable's 3.
 
 **Raw data:** every eval definition (prompt, hidden trap, rubric) is in [`evals/evals.json`](evals/evals.json) and every per-item verdict in [`evals/results.json`](evals/results.json), so every number below can be recomputed from this repository.
 
 ## Method
+
+The verbatim prompt templates, counterbalancing rule, and model settings are in [`evals/PROTOCOL.md`](evals/PROTOCOL.md).
 
 - **Generation.** 10 generator agents produced 12 evals each — 120 total — across ten dimensions matching the manual's sections plus two stressors (pure recall-bait, pure hard reasoning). Every eval is a self-contained realistic request (code, logs, data tables included) with a hidden trap: a tempting, fluent, wrong response and an objectively determinable correct one, plus rubric pass-criteria and fail-tells written before any model answered.
 - **Conditions.** Each eval was answered twice: (A) **Opus 4.8**, instructed to read `OPERATING_MANUAL.md` in full and apply it, and (B) **Fable 5**, bare. Both saw identical scenario text and tool constraints.
